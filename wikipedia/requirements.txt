@@ -1,0 +1,4 @@
+transformers
+wikipedia
+scipy
+torch

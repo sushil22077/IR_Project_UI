@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Wikipedia</title>
+  <style>
+    /* Body Styles */
+    body {
+      background-color: #F7F7F7;
+      font-family: Arial, sans-serif;
+    }
+/* Header Styles */
+header {
+  background-color: #FFFFFF;
+  box-shadow: 0px 0px 5px 0px #CCCCCC;
+  color: #333333;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  margin: 0;
+  text-shadow: 2px 2px #CCCCCC;
+}
+
+/* Form Styles */
+form {
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px 0px #CCCCCC;
+  margin: 50px auto;
+  max-width: 600px;
+  padding: 20px;
+  text-align: center;
+}
+
+label {
+  color: #333333;
+  display: block;
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px #CCCCCC;
+  text-transform: uppercase;
+}
+
+input[type="text"] {
+  border: none;
+  border-bottom: 2px solid #0066CC;
+  font-size: 24px;
+  margin-bottom: 20px;
+  padding: 5px;
+  width: 100%;
+}
+
+input[type="submit"] {
+  background-color: #0066CC;
+  border: none;
+  border-radius: 3px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 10px 20px;
+  text-transform: uppercase;
+}
+
+input[type="submit"]:hover {
+  background-color: #003399;
+}
+
+/* Footer Styles */
+footer {
+  background-color: #333333;
+  color: #FFFFFF;
+  padding: 20px;
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  <!-- Header Section -->
+  <header>
+    <h1>Search Wikipedia</h1>
+  </header>
+  <!-- Form Section -->
+  <form method="POST">
+    <label for="query">Enter your query:</label>
+    <input type="text" id="query" name="query" required>
+    <input type="submit" value="Search">
+  </form>
+  <!-- Footer Section -->
+  <footer>
+    &copy; 2023 Wikipedia Search Inc. All rights reserved.
+  </footer>
+</body>
+</html>
