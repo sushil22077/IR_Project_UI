@@ -63,11 +63,6 @@
 </head>
 <body>
 	<h1>Search Wikipedia</h1>
-	<form method="get">
-		<label for="query">Search Query:</label>
-		<input type="text" id="query" name="query">
-		<input type="submit" value="Search">
-	</form>
 	{% if results %}
     <form action="refined_results.html" method="post">
       {% for result in results %}
