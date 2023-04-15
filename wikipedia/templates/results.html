@@ -1,137 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Search Results</title>
-  <style>
-    /* Body Styles */
-    body {
-      background-color: #F9F9F9;
-      font-family: Arial, sans-serif;
-    }
-    /* Header Styles */
-header {
-  background-color: #333333;
-  color: #FFFFFF;
-  padding: 20px;
-  text-align: center;
-}
-h1 {
-font-size: 36px;
-margin: 0;
-text-shadow: 2px 2px #666666;
-}
-
-/* Table Styles */
-table {
-border-collapse: collapse;
-margin: 20px auto;
-width: 90%;
-}
-
-th {
-background-color: #0066CC;
-border: 1px solid #CCCCCC;
-color: #FFFFFF;
-padding: 15px;
-text-align: left;
-text-transform: uppercase;
-}
-
-td {
-background-color: #FFFFFF;
-border: 1px solid #CCCCCC;
-color: #333333;
-padding: 10px;
-transition: background-color 0.2s ease-in-out;
-}
-
-tr:hover td {
-background-color: #F5F5F5;
-cursor: pointer;
-}
-
-/* Link Styles */
-a {
-color: #0066CC;
-text-decoration: none;
-}
-
-a:hover {
-text-decoration: underline;
-}
-
-/* Footer Styles */
-footer {
-background-color: #333333;
-color: #FFFFFF;
-padding: 20px;
-text-align: center;
-}
-
-/* Animation Styles */
-@keyframes fadeIn {
-from {
-opacity: 0;
-}
-to {
-opacity: 1;
-}
-}
-
-.fadeIn {
-animation: fadeIn 0.5s ease-in-out;
-}
-</style>
-
+	<title>Search Wikipedia</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+		h1 {
+			font-size: 36px;
+			margin-bottom: 10px;
+		}
+		form {
+			margin-bottom: 20px;
+		}
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+		input[type="text"] {
+			width: 100%;
+			padding: 10px;
+			margin-bottom: 10px;
+			box-sizing: border-box;
+			border: 2px solid #ccc;
+			border-radius: 4px;
+		}
+		input[type="submit"] {
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		input[type="submit"]:hover {
+			background-color: #45a049;
+		}
+		.result {
+			margin-bottom: 20px;
+			padding: 10px;
+			border: 2px solid #ccc;
+			border-radius: 4px;
+		}
+		.result h2 {
+			margin-top: 0;
+		}
+		.result a {
+			text-decoration: none;
+		}
+		.result p {
+			margin: 0;
+		}
+		.result input[type="checkbox"] {
+			margin-right: 10px;
+		}
+		.result label {
+			display: inline;
+			font-weight: normal;
+		}
+	</style>
 </head>
 <body>
-  <!-- Header Section -->
-  <header>
-    <h1>Search Results</h1>
-  </header>
-  <!-- Main Table Section -->
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>URL</th>
-        <th>Summary</th>
-        <th>Similarity</th>
-      </tr>
-    </thead>
-    <tbody>
+	<h1>Search Wikipedia</h1>
+	<form method="get">
+		<label for="query">Search Query:</label>
+		<input type="text" id="query" name="query">
+		<input type="submit" value="Search">
+	</form>
+	{% if results %}
+    <form action="refined_results.html" method="post">
       {% for result in results %}
-      <tr class="fadeIn">
-        <td>{{ result['title'] }}</td>
-        <td><a href="{{ result['url'] }}">{{ result['url'] }}</a></td>
-        <td>{{ result['summary'] }}</td>
-        <td>{{ result['similarity'] }}</td>
-      </tr>
+        <div class="result">
+          <h2><a href="{{ result.url }}">{{ result.title }}</a></h2>
+          <p>{{ result.summary }}</p>
+          <input type="checkbox" id="result{{ loop.index }}" name="result{{ loop.index }}" value="{{ result.title }}">
+          <label for="result{{ loop.index }}">Is this result relevant?</label>
+        </div>
       {% endfor %}
-    </tbody>
-  </table>
-  <!-- Footer Section -->
-  <footer>
-    &copy; 2023 Search Engine Inc. All rights reserved.
-  </footer>
-  <!-- JavaScript Section -->
-  <script>
-    const rows = document.querySelectorAll("tbody tr");
-    rows.forEach((row, index) => {
-      if (index % 2 !== 0) {
-        row.style.backgroundColor = "#F5F5F5";
-      }
-      row.addEventListener("mouseover", () => {
-        row.style.backgroundColor = "#F9F9F9";
-      });
-      row.addEventListener("mouseout", () => {
-        if (index % 2 === 0) {
-          row.style.backgroundColor = "#FFFFFF";
-        } else {
-          row.style.backgroundColor = "#F5F5F5";
-        }
-      });
-    });
-  </script>
+      <input type="submit" value="Refine Search">
+    </form>
+  {% endif %}
 </body>
 </html>

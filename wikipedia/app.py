@@ -24,7 +24,7 @@ def get_bert_embeddings(text):
     return embeddings.detach().cpu().numpy()
 
 # Returns the top 'n_results' search results from Wikipedia for the given query
-def search_wikipedia(query, n_results=5, similarity_threshold=0.5):
+def search_wikipedia(query, n_results=5, similarity_threshold=0.5, feedback=None):
     # get search results from Wikipedia API
     search_results = wikipedia.search(query, results=n_results)
 
@@ -63,17 +63,95 @@ def search_wikipedia(query, n_results=5, similarity_threshold=0.5):
     # sort results by similarity in descending order
     results = sorted(results, key=lambda x: x['similarity'], reverse=True)
 
+    if feedback:
+        for i, result in enumerate(results):
+            if i not in feedback:
+                continue
+            if feedback[i] == 0:
+                results[i]['similarity'] = 0
+
     # return top n_results results
     return results[:n_results]
+
+def get_user_feedback(results):
+    feedback = {}
+    for i, result in enumerate(results):
+        title = result['title']
+        feedback[title] = False
+    return feedback
+
+def refine_search_query(query, results, feedback):
+    new_query = query
+    for i, result in enumerate(results):
+        if i not in feedback:
+            continue
+        if feedback[i] == 0:
+            continue
+        elif feedback[i] == 1:
+            new_query = result['title']
+            break
+    return new_query
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
         query = request.form['query']
         results = search_wikipedia(query)
-        return render_template('results.html', results=results)
+
+        results = search_wikipedia(query)
+
+        # ask the user for feedback and refine the search query
+        feedback = get_user_feedback(results)
+        new_query = refine_search_query(query, results, feedback)
+
+        # do the refined search
+        results = search_wikipedia(new_query, feedback=feedback)
+
+        while len(results) == 0:
+            print("No results found. Please refine your search query.")
+            feedback = get_user_feedback([])
+            new_query = refine_search_query(query, results, feedback=feedback)
+            results = search_wikipedia(new_query)
+
+        return render_template('results.html', results=results, feedback=feedback)
+
     else:
         return render_template('index.html')
+
+import json
+from urllib.parse import quote
+@app.route('/refine-search', methods=['POST'])
+def refine_search():
+    query = request.form['query']
+    results = search_wikipedia(query)
+
+    # ask the user for feedback and refine the search query
+    feedback = get_user_feedback(results)
+    new_query = refine_search_query(query, results, feedback)
+
+    # do the refined search
+    results = search_wikipedia(new_query, feedback=feedback)
+
+    while len(results) == 0:
+        print("No results found. Please refine your search query.")
+        feedback = get_user_feedback([])
+        new_query = refine_search_query(query, results, feedback=feedback)
+        results = search_wikipedia(new_query)
+
+    # convert results to JSON string and pass as parameter in URL
+    results_json = json.dumps(results)
+    results_encoded = quote(results_json)
+    return redirect(url_for('refined_results', query=new_query, results=results_encoded))
+
+from urllib.parse import unquote
+@app.route('/refined_results.html', methods=['POST'])
+def refined_results():
+    selected_results = []
+    for key in request.form:
+        if key.startswith('result'):
+            selected_results.append(request.form[key])
+    results = search_wikipedia(selected_results)
+    return render_template('refined_results.html', results=results)
 
 if __name__ == '__main__':
     app.run(debug=True)
